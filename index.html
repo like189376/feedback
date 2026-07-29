@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>直言不讳 - 员工反馈</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#0052D9;--primary-light:#3D7EFF;--primary-dark:#003DA6;--radius:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif;background:#f0f4ff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+
+.container{background:#fff;border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,82,217,.1);max-width:460px;width:100%;overflow:hidden}
+
+/* === 蓝色渐变头部 === */
+.header{background:linear-gradient(135deg,var(--primary),var(--primary-light));padding:36px 28px 28px;color:#fff;text-align:center}
+.header-subtitle{font-size:13px;opacity:.75;margin-bottom:12px;letter-spacing:.5px}
+.header h1{font-size:26px;font-weight:700;letter-spacing:3px;margin-bottom:14px}
+.header-slogan{display:inline-block;border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:7px 22px;font-size:13.5px;letter-spacing:1px;background:rgba(255,255,255,.12)}
+
+/* === 操作说明 === */
+.guide-box{margin:16px 24px 0;display:flex;align-items:center;justify-content:center;gap:0;background:#eef3ff;border-radius:8px;padding:10px 0;font-size:12.5px;color:var(--primary)}
+.guide-step{display:flex;align-items:center;gap:6px;padding:0 14px}
+.guide-step .num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--primary);color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
+.guide-arrow{color:#b0c4f0;font-size:14px;font-weight:700}
+
+/* === 表单区 === */
+.form{padding:24px 28px 28px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:13.5px;font-weight:600;color:#333;margin-bottom:7px}
+.form-group label .required{color:#E34D59;margin-left:2px}
+.form-group select,
+.form-group textarea,
+.form-group input[type="password"]{width:100%;padding:10px 12px;border:1.5px solid #E0E4EA;border-radius:8px;font-size:14px;font-family:inherit;transition:border .2s,box-shadow .2s;outline:none;background:#FAFBFC;color:#333}
+.form-group select:focus,
+.form-group textarea:focus,
+.form-group input[type="password"]:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,82,217,.1);background:#fff}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-group .hint{font-size:11.5px;color:#86909c;margin-top:4px}
+
+/* 密码输入行 */
+.pwd-row{display:flex;gap:10px;align-items:stretch}
+.pwd-row input{flex:1}
+.pwd-row button{white-space:nowrap;padding:0 22px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .2s}
+.pwd-row button:hover{opacity:.85}
+
+/* 提交按钮 */
+.submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:2px}
+.submit-btn:hover{opacity:.9}
+.submit-btn:active{transform:scale(.98)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* === 成功弹窗 === */
+.success-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s}
+.success-overlay.show{opacity:1;pointer-events:auto}
+.success-box{background:#fff;border-radius:16px;padding:40px 36px;text-align:center;transform:scale(.9);transition:transform .3s}
+.success-overlay.show .success-box{transform:scale(1)}
+.success-icon{width:56px;height:56px;border-radius:50%;background:#00B42A;color:#fff;font-size:28px;line-height:56px;margin:0 auto 16px}
+.success-box h3{font-size:18px;color:#333;margin-bottom:8px}
+.success-box p{font-size:14px;color:#86909c;margin-bottom:20px}
+.success-box button{padding:8px 28px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:14px;font-family:inherit;cursor:pointer}
+
+/* === 离线提示 === */
+.offline-box{text-align:center;padding:60px 28px}
+.offline-icon{font-size:48px;margin-bottom:16px}
+.offline-box h3{font-size:18px;color:#333;margin-bottom:8px}
+.offline-box p{font-size:14px;color:#86909c}
+
+/* === 底部 === */
+.footer{text-align:center;padding:14px;font-size:11px;color:#c9cdd4;letter-spacing:.5px}
+
+/* === 动画 === */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.container{animation:fadeInUp .4s ease}
+</style>
+</head>
+<body>
+
+<!-- ========== 入口验证页 ========== -->
+<div class="container" id="authContainer">
+  <div class="header">
+    <div class="header-subtitle">任何建议、不满或需求</div>
+    <h1>请您"码"上说</h1>
+    <div class="header-slogan">你的声音 我们认真听</div>
+  </div>
+  <div class="guide-box">
+    <div class="guide-step"><span class="num">1</span>输入密码</div>
+    <span class="guide-arrow">›</span>
+    <div class="guide-step"><span class="num">2</span>填写反馈内容</div>
+    <span class="guide-arrow">›</span>
+    <div class="guide-step"><span class="num">3</span>提交</div>
+  </div>
+  <div class="form">
+    <div class="form-group">
+      <label>访问密码</label>
+      <div class="pwd-row">
+        <input type="password" id="fbAuthPwd" placeholder="请输入密码" autofocus>
+        <button onclick="checkAuth()">进 入</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer">谈心谈话管理系统 · 员工关怀平台</div>
+</div>
+
+<!-- ========== 反馈表单 ========== -->
+<div class="container" id="mainContainer" style="display:none">
+  <div class="header">
+    <div class="header-subtitle">任何建议、不满或需求</div>
+    <h1>请您"码"上说</h1>
+    <div class="header-slogan">你的声音 我们认真听</div>
+  </div>
+  <form class="form" id="feedbackForm">
+    <div class="form-group">
+      <label>您所在的部门/班组 <span class="required">*</span></label>
+      <select id="fbDept" required>
+        <option value="">请选择部门/班组</option>
+        <option value="话务运营组">话务运营组</option>
+        <option value="质培管理组">质培管理组</option>
+        <option value="互联网运营组">互联网运营组</option>
+        <option value="工单运营组">工单运营组</option>
+        <option value="智能客服组">智能客服组</option>
+        <option value="综合支撑组">综合支撑组</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>您想要反馈的内容是什么？ <span class="required">*</span></label>
+      <textarea id="fbContent" placeholder="请详细描述您遇到的问题或想法..." rows="4" required></textarea>
+      <div class="hint">请尽可能详细描述，帮助我们更好地理解您的需求</div>
+    </div>
+    <div class="form-group">
+      <label>您希望如何解决这个问题？</label>
+      <textarea id="fbSolution" placeholder="您的建议或期望的解决方案..." rows="3"></textarea>
+      <div class="hint">选填，但有您的建议我们会更有方向</div>
+    </div>
+    <button type="submit" class="submit-btn" id="submitBtn">提交反馈</button>
+  </form>
+  <div class="footer">谈心谈话管理系统 · 员工关怀平台</div>
+</div>
+
+<!-- ========== 提交成功 ========== -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">&#10003;</div>
+    <h3>提交成功</h3>
+    <p>感谢您的反馈，我们会认真对待每一条意见</p>
+    <button onclick="closeSuccess()">继续反馈</button>
+  </div>
+</div>
+
+<!-- ========== 离线/加载失败 ========== -->
+<div class="container" id="offlineContainer" style="display:none">
+  <div class="offline-box">
+    <div class="offline-icon">&#128276;</div>
+    <h3>系统维护中</h3>
+    <p>服务器暂时无法连接，请稍后再试<br>如持续无法访问，请联系管理员</p>
+  </div>
+</div>
+
+<script>
+// ===== 动态获取API地址 =====
+// 从 tunnel.json 读取当前隧道URL，实现固定二维码 + 动态API地址
+let API_BASE = '';
+
+async function loadApiBase(){
+  try{
+    const r = await fetch('./tunnel.json?t=' + Date.now());
+    const d = await r.json();
+    if(d && d.url) API_BASE = d.url;
+  }catch(e){}
+  // 如果未获取到（本地访问场景），使用当前页面所在域
+  if(!API_BASE) API_BASE = window.location.origin;
+}
+
+// 密码验证
+const FB_AUTH_KEY='df_auth_ok';
+function checkAuth(){
+  const pwd=document.getElementById('fbAuthPwd').value.trim();
+  if(pwd==='888888'){
+    sessionStorage.setItem(FB_AUTH_KEY,'1');
+    document.getElementById('authContainer').style.display='none';
+    document.getElementById('mainContainer').style.display='';
+  }else{
+    alert('密码错误，请联系管理员获取');
+  }
+}
+document.getElementById('fbAuthPwd').addEventListener('keyup',function(e){if(e.key==='Enter')checkAuth()});
+if(sessionStorage.getItem(FB_AUTH_KEY)){
+  document.getElementById('authContainer').style.display='none';
+  document.getElementById('mainContainer').style.display='';
+}
+
+// 提交反馈
+document.getElementById('feedbackForm').onsubmit=async function(e){
+  e.preventDefault();
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;btn.textContent='提交中...';
+  try{
+    const r=await fetch(API_BASE + '/api/direct-feedback',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        dept:document.getElementById('fbDept').value,
+        content:document.getElementById('fbContent').value,
+        solution:document.getElementById('fbSolution').value
+      })
+    });
+    const d=await r.json();
+    if(!r.ok){alert(d.error||'提交失败');return}
+    document.getElementById('successOverlay').classList.add('show');
+    document.getElementById('feedbackForm').reset();
+  }catch(e){
+    alert('网络异常，请稍后重试\n\n如持续无法提交，可能服务器暂时离线');
+  }
+  finally{btn.disabled=false;btn.textContent='提交反馈'}
+};
+function closeSuccess(){document.getElementById('successOverlay').classList.remove('show')}
+
+// ===== 启动：加载API地址 =====
+loadApiBase();
+</script>
+</body>
+</html>
